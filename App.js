@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { MD3LightTheme, Provider } from "react-native-paper";
+import AppNavigator from "./src/navigation/AppNavigator";
+
+
+// note que criamos o arquivo src/config/theme.js
+import { themeDark, themeLight } from "./src/config/theme";
+import { useColorScheme } from "react-native";
 
 export default function App() {
+  // pega o tema do dispositivo
+  const colorScheme = useColorScheme();
+  // criação de tema
+  // https://callstack.github.io/react-native-paper/docs/guides/theming/#creating-dynamic-theme-colors
+  const isDarkMode = colorScheme === "dark";
+  
+  // let theme;
+  // if (isDarkMode) {
+  //   theme = themeDark;
+  // } else {
+  //   theme = themeLight;
+  // }
+  
+  // operador ternário
+  const theme = isDarkMode ? themeDark : themeLight;
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider theme={theme}>
+      {/* aqui usamos o provider do RNP */}
+      <AppNavigator />
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

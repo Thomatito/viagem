@@ -5,6 +5,9 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../config/firebase";
 import { collection, doc, setDoc  } from 'firebase/firestore';
 
+
+
+
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");

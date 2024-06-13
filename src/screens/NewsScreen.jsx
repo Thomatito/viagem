@@ -42,7 +42,7 @@ const App = () => {
       ) : cities.length > 0 ? (
         <Surface>
           
-          <Text style={{fontSize: 30}}>Melhores cidades/comunidades italianas para você viajar!</Text>
+          <Text style={{fontSize: 30}}>Melhores cidades/comunidades europeias para você viajar!</Text>
           {cities.map(city => (
             <Text  style={{fontSize: 20, alignItems: "center"}} key={city}>{city}</Text>
             

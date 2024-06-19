@@ -1,32 +1,73 @@
-import { MD3LightTheme, Provider } from "react-native-paper";
-import AppNavigator from "./src/navigation/AppNavigator";
-
-
-// note que criamos o arquivo src/config/theme.js
-import { themeDark, themeLight } from "./src/config/theme";
-import { useColorScheme } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import * as Location from 'expo-location';
 
 export default function App() {
-  // pega o tema do dispositivo
-  const colorScheme = useColorScheme();
-  // criação de tema
-  // https://callstack.github.io/react-native-paper/docs/guides/theming/#creating-dynamic-theme-colors
-  const isDarkMode = colorScheme === "dark";
-  
-  // let theme;
-  // if (isDarkMode) {
-  //   theme = themeDark;
-  // } else {
-  //   theme = themeLight;
-  // }
-  
-  // operador ternário
-  const theme = isDarkMode ? themeDark : themeLight;
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [updatingLocation, setUpdatingLocation] = useState(false); // Estado para controlar a atualização da localização
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== 'granted') {
+        setErrorMsg('Permissão de acesso à localização negada');
+        return;
+      }
+
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+      } catch (error) {
+        setErrorMsg('Erro ao obter a localização');
+      }
+    })();
+  }, []);
+
+  const updateLocation = async () => {
+    setUpdatingLocation(true); // Define o estado de atualização como verdadeiro
+
+    try {
+      let newLocation = await Location.getCurrentPositionAsync({});
+      setLocation(newLocation);
+      setErrorMsg(null);
+    } catch (error) {
+      setErrorMsg('Erro ao atualizar a localização');
+    } finally {
+      setUpdatingLocation(false); // Define o estado de atualização como falso após a tentativa de atualização
+    }
+  };
+
+  let text = 'Aguardando...';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
+  }
 
   return (
-    <Provider theme={theme}>
-      {/* aqui usamos o provider do RNP */}
-      <AppNavigator />
-    </Provider>
+    <View style={styles.container}>
+      <Text style={styles.paragraph}>{text}</Text>
+      <Button
+        title={updatingLocation ? 'Atualizando...' : 'Atualizar Localização'}
+        onPress={updateLocation}
+        disabled={updatingLocation}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  paragraph: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+});
